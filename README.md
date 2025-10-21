@@ -1,6 +1,5 @@
 # Moodle 5.0 Production Installation Script for Rocky Linux
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rocky Linux](https://img.shields.io/badge/Rocky%20Linux-9-green.svg)](https://rockylinux.org/)
 [![Moodle](https://img.shields.io/badge/Moodle-5.0-orange.svg)](https://moodle.org/)
 
