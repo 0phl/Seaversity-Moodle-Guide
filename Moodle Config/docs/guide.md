@@ -71,12 +71,17 @@ Replace 779 with the actual PID shown in your system.
 
 After terminating the conflicting process, test and start PostgreSQL again:
 
+
+```bash
+sudo systemctl start postgresql-15
+```
+
+#### Create Moodle Database
+
 ```bash
 sudo -i -u postgres
 psql
 ```
-
-#### Create Moodle Database
 
 Once PostgreSQL is running, create the Moodle database:
 
