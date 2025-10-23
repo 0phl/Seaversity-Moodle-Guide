@@ -140,17 +140,17 @@ else {
 
 ## 7. Configure Nginx
 
-Navigate to the Nginx sites-enabled directory:
+Navigate to the Nginx sites-available directory:
 
 ```bash
-cd /etc/nginx/sites-enabled/
+cd /etc/nginx/sites-available/
 vi lms.conf
 ```
 
 Change the `server_name` to your domain:
 
 ```bash
-cat /etc/nginx/sites-enabled/lms.conf
+cat /etc/nginx/sites-available/lms.conf
 ```
 
 ### Restart Nginx and Check Status
