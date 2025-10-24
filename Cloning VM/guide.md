@@ -3,7 +3,7 @@
 ## Step 1: Clone the Template VM
 
 1. Navigate to **Virtual Machine** → **PCI_Cluster (84)** → **Templates folder**
-2. Clone the template: `"(T)-RL-9-mti-clone-mtipackage"`
+2. Clone the template: `"(T)-RL-9-mti-(template)-it"`
 3. Configure the clone settings:
    - **VM Name**: Change based on your preferred name
    - **Group**: Select the destination folder (e.g., Practice folder)
