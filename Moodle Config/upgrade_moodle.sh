@@ -18,7 +18,7 @@ MOODLE_PATH="${BASE_PATH}/moodle"
 MOODLEDATA_PATH="${BASE_PATH}/moodledata"
 PHP_BIN="php83"
 MOODLE_VERSION="5.0.3+"
-MOODLE_DOWNLOAD_URL="https://download.moodle.org/download.php/stable500/moodle-latest-500.tgz"
+MOODLE_DOWNLOAD_URL="https://download.moodle.org/download.php/direct/stable500/moodle-latest-500.tgz"
 
 DB_HOST="127.0.0.1"
 DB_NAME="moodle"
