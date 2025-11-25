@@ -12,8 +12,8 @@ DB_NAME="moodledb"
 DB_USER="moodleuser"
 DB_PASS="PUTDBPASS@"  # CHANGE THIS!
 DOMAIN=""  # Leave empty to use IP, or set your domain like "moodle.yourdomain.com"
-MOODLE_DIR="/var/www/moodle"
-PROJ_ROOT="/var/moodledata"
+MOODLE_DIR="/data/content/lms/moodle"
+PROJ_ROOT="/data/content/lms/moodledata"
 INSTALL_REDIS="no"  # Set to "yes" if you want Redis session handling
 
 echo "================================"
@@ -106,7 +106,8 @@ systemctl enable nginx
 
 echo "[7/12] Installing Git and downloading Moodle 5.0..."
 dnf install -y git
-cd /var/www
+mkdir -p /data/content/lms
+cd /data/content/lms
 git clone -b ${MOODLE_BRANCH} https://github.com/moodle/moodle.git moodle
 
 echo "[8/12] Creating separated Moodle data directories (production structure)..."
@@ -232,13 +233,17 @@ chmod 640 ${MOODLE_DIR}/config.php
 
 echo "[11/12] Configuring Nginx with X-Sendfile support..."
 
+# Create sites-available and sites-enabled directories if they don't exist
+mkdir -p /etc/nginx/sites-available
+mkdir -p /etc/nginx/sites-enabled
+
 if [ -z "$DOMAIN" ]; then
     SERVER_NAME="${SERVER_IP} _"
 else
     SERVER_NAME="${DOMAIN}"
 fi
 
-cat > /etc/nginx/conf.d/moodle.conf <<EOF
+cat > /etc/nginx/sites-available/lms.conf <<EOF
 server {
     listen 80 default_server;
     server_name ${SERVER_NAME};
@@ -307,6 +312,14 @@ server {
     }
 }
 EOF
+
+# Create symbolic link to sites-enabled
+ln -sf /etc/nginx/sites-available/lms.conf /etc/nginx/sites-enabled/lms.conf
+
+# Update nginx.conf to include sites-enabled if not already present
+if ! grep -q "include /etc/nginx/sites-enabled/\*.conf;" /etc/nginx/nginx.conf; then
+    sed -i '/include \/etc\/nginx\/conf.d\/\*.conf;/a \    include /etc/nginx/sites-enabled/*.conf;' /etc/nginx/nginx.conf
+fi
 
 # Test Nginx configuration
 nginx -t
@@ -392,7 +405,7 @@ if [ -z "$DOMAIN" ]; then
     echo "1. Update DOMAIN variable in this script"
     echo "2. Re-run the script, or manually update:"
     echo "   - ${MOODLE_DIR}/config.php (\$hostname variable)"
-    echo "   - /etc/nginx/conf.d/moodle.conf (server_name)"
+    echo "   - /etc/nginx/sites-available/lms.conf (server_name)"
     echo "3. Set up SSL: dnf install certbot python3-certbot-nginx"
     echo "4. Run: certbot --nginx -d your-domain.com"
     echo ""
