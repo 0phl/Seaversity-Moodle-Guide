@@ -34,23 +34,34 @@ echo "[1/12] Updating system packages..."
 dnf update -y
 dnf install -y epel-release
 
-echo "[2/12] Installing PostgreSQL 15..."
-dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-dnf -qy module disable postgresql
-dnf install -y postgresql15-server postgresql15-contrib
-/usr/pgsql-15/bin/postgresql-15-setup initdb
-systemctl enable postgresql-15
-systemctl start postgresql-15
+echo "[2/12] Installing PostgreSQL 15 (Native Module)..."
+# Enable the native PostgreSQL 15 stream
+dnf module reset postgresql -y
+dnf module enable postgresql:15 -y
+
+# Install server and contrib
+dnf install -y postgresql-server postgresql-contrib
+
+# Initialize Database (Note: The command path is different for native!)
+postgresql-setup --initdb
+
+# Start Service (Note: The service name is just 'postgresql', not 'postgresql-15')
+systemctl enable postgresql
+systemctl start postgresql
 
 echo "[3/12] Configuring PostgreSQL database..."
+# (These SQL commands remain exactly the same)
 sudo -u postgres psql -c "CREATE DATABASE ${DB_NAME};"
 sudo -u postgres psql -c "CREATE USER ${DB_USER} WITH PASSWORD '${DB_PASS}';"
 sudo -u postgres psql -c "ALTER DATABASE ${DB_NAME} OWNER TO ${DB_USER};"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${DB_NAME} TO ${DB_USER};"
 
 # Configure PostgreSQL to accept password authentication
-sed -i 's/ident/md5/g' /var/lib/pgsql/15/data/pg_hba.conf
-systemctl restart postgresql-15
+# NOTICE: The path changed from /var/lib/pgsql/15/data/ to /var/lib/pgsql/data/
+sed -i 's/ident/md5/g' /var/lib/pgsql/data/pg_hba.conf
+
+# Restart the service (Name is just 'postgresql')
+systemctl restart postgresql
 
 echo "[4/12] Installing PHP 8.3 and required extensions..."
 dnf install -y https://rpms.remirepo.net/enterprise/remi-release-9.rpm
