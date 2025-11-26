@@ -267,12 +267,58 @@ sudo systemctl status php-fpm
 
 ## Nginx Installation
 
-### Step 12: Install Nginx
+### Step 12: Add Official Nginx Repository
+
+For modern features like HTTP/2 and better performance, we'll install the latest Nginx mainline version from the official Nginx repository instead of the older version in Rocky Linux's default repositories.
 
 ```bash
+# Create Nginx repository file
+sudo vi /etc/yum.repos.d/nginx.repo
+```
+
+**Paste the following content:**
+
+```ini
+[nginx-mainline]
+name=nginx mainline repo
+baseurl=http://nginx.org/packages/mainline/centos/9/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+```
+
+**Save and exit** (Press `Esc`, then type `:wq` and press `Enter`)
+
+**Verify the file is correct:**
+
+```bash
+cat /etc/yum.repos.d/nginx.repo
+```
+
+Make sure the first line has the opening bracket: `[nginx-mainline]`
+
+### Step 12a: Install Nginx
+
+```bash
+# Clean DNF cache
+sudo dnf clean all
+
+# Install Nginx from official repository
 sudo dnf install -y nginx
 
-# Enable Nginx to start on boot
+# Verify the version (should be 1.27.x or higher)
+nginx -v
+```
+
+**Expected output:**
+```
+nginx version: nginx/1.27.3 (or higher)
+```
+
+**Enable Nginx to start on boot:**
+
+```bash
 sudo systemctl enable nginx
 ```
 
